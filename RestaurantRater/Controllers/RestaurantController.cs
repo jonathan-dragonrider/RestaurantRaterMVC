@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -36,5 +37,35 @@ namespace RestaurantRater.Controllers
 
             return View(restaurant);
         }
+
+        // GET: Restaurant/Delete/{id}
+        public ActionResult Delete(int? id) // What does the question mark do?
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Restaurant restaurant = _db.Restaurants.Find(id);
+            if (restaurant == null)
+            {
+                return HttpNotFound();
+            }
+            return View(restaurant);
+        }
+
+        // How is this information being passed between the controller and the view?
+        // POST: Restaurant/Delete/{id} 
+        [HttpPost, ActionName("Delete")] // Why is this HttpPost instead of HttpDelete? What does ActionName refer to?
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            Restaurant restaurant = _db.Restaurants.Find(id);
+            _db.Restaurants.Remove(restaurant);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
+
     }
 }
